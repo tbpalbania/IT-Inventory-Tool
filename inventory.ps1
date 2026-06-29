@@ -161,7 +161,22 @@ while ($true) {
     }
 }
 
-# Copy to clipboard in CSV format
-$csvString = $csvData | ConvertTo-Csv -NoTypeInformation | Out-String
-Set-Clipboard -Value $csvString
-Write-Host "Data copied to clipboard successfully as CSV! You can now paste it." -ForegroundColor Green
+# Send to Google Sheets Webhook
+$webhookUrl = "https://script.google.com/macros/s/AKfycbyCJjgFceSqKS283KUtXYrL4X_g3woAlpya53sZPTFe9IQ8suZ9ZPVerBV-K25b698w/exec"
+$jsonPayload = $csvData | ConvertTo-Json -Depth 5 -Compress
+
+Write-Host "Sending data to Central Database..." -ForegroundColor Yellow
+
+# Disable SSL validation temporarily in case of local machine restrictions, although normally not needed
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+try {
+    $response = Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $jsonPayload -ContentType "application/json"
+    if ($response.status -eq "success") {
+        Write-Host "Data successfully saved to Central Database!" -ForegroundColor Green
+    } else {
+        Write-Host "Server reported an issue: $($response.message)" -ForegroundColor Red
+    }
+} catch {
+    Write-Host "Failed to send data to the server: $($_.Exception.Message)" -ForegroundColor Red
+}

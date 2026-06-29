@@ -2,6 +2,8 @@
 
 echo -e "\033[0;36mTrusted Business Partners (Tax ID: M41304028K) - IT Inventory Tool\033[0m"
 
+# When a script is run via `curl | bash`, standard input is taken by the pipe.
+# We must explicitly read from /dev/tty to capture keyboard input from the user.
 read -p "Employee Name / Workstation ID: " employee < /dev/tty
 read -p "Godina (Text/number Input): " godina < /dev/tty
 read -p "Kati (Text/number Input): " kati < /dev/tty
@@ -98,7 +100,32 @@ while true; do
     esac
 done
 
-pbcopy < "$tmpfile"
-rm "$tmpfile"
+echo -e "\033[0;33mSending data to Central Database...\033[0m"
+python3 -c '
+import csv
+import json
+import urllib.request
+import sys
 
-echo -e "\033[0;32mData copied to clipboard successfully as CSV! You can now paste it.\033[0m"
+csv_file = sys.argv[1]
+url = sys.argv[2]
+
+data = []
+with open(csv_file, "r") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        data.append(row)
+
+req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers={"Content-Type": "application/json"})
+try:
+    with urllib.request.urlopen(req) as response:
+        result = json.loads(response.read().decode())
+        if result.get("status") == "success":
+            print("\033[0;32mData successfully saved to Central Database!\033[0m")
+        else:
+            print("\033[0;31mServer reported an issue: " + result.get("message", "Unknown error") + "\033[0m")
+except Exception as e:
+    print("\033[0;31mFailed to send data: " + str(e) + "\033[0m")
+' "$tmpfile" "https://script.google.com/macros/s/AKfycbyCJjgFceSqKS283KUtXYrL4X_g3woAlpya53sZPTFe9IQ8suZ9ZPVerBV-K25b698w/exec"
+
+rm "$tmpfile"
