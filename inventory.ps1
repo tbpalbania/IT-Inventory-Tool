@@ -41,6 +41,30 @@ $csvData += [PSCustomObject]@{
     OSVersion = $osVersion
 }
 
+if ($category -eq "Laptop") {
+    Write-Host "Laptop detected. Windows does not automatically expose Charger Serials across all brands." -ForegroundColor Yellow
+    $addCharger = Read-Host "Do you want to manually document the Charger? (y/n)"
+    if ($addCharger -match '^[yY]') {
+        $cMake = Read-Host "Charger Make"
+        $cModel = Read-Host "Charger Model/Wattage"
+        $cSerial = Read-Host "Charger Serial Number"
+        
+        $csvData += [PSCustomObject]@{
+            Make = $cMake
+            Model = $cModel
+            SerialNumber = $cSerial
+            Category = "Charger"
+            DeviceType = "Accessory"
+            ParentPC_Serial = $serial
+            EmployeeName = $EmployeeName
+            Godina = $Godina
+            Kati = $Kati
+            Zyra = $Zyra
+            OSVersion = ""
+        }
+    }
+}
+
 # Scan Monitors
 Write-Host "Scanning for connected monitors..." -ForegroundColor Yellow
 $monitors = Get-CimInstance WmiMonitorID -Namespace root\wmi -ErrorAction SilentlyContinue
@@ -102,9 +126,10 @@ while ($true) {
     Write-Host "4. Mouse"
     Write-Host "5. Headphones/Headset"
     Write-Host "6. Docking Station"
-    Write-Host "7. Other"
+    Write-Host "7. Charger"
+    Write-Host "8. Other"
     
-    $catSelection = Read-Host "Enter number (1-7)"
+    $catSelection = Read-Host "Enter number (1-8)"
     $cat = "Other"
     switch ($catSelection) {
         "1" { $cat = "Monitor" }
@@ -113,7 +138,8 @@ while ($true) {
         "4" { $cat = "Mouse" }
         "5" { $cat = "Headphones/Headset" }
         "6" { $cat = "Docking Station" }
-        "7" { $cat = "Other" }
+        "7" { $cat = "Charger" }
+        "8" { $cat = "Other" }
     }
     
     $mMake = Read-Host "Make"
