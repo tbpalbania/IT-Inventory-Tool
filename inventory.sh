@@ -126,6 +126,6 @@ try:
             print("\033[0;31mServer reported an issue: " + result.get("message", "Unknown error") + "\033[0m")
 except Exception as e:
     print("\033[0;31mFailed to send data: " + str(e) + "\033[0m")
-' "$tmpfile" "https://script.google.com/macros/s/AKfycbyCJjgFceSqKS283KUtXYrL4X_g3woAlpya53sZPTFe9IQ8suZ9ZPVerBV-K25b698w/exec"
+' "$tmpfile" "https://script.google.com/macros/s/AKfycbxgskn1sJA0H8fCw0YrroLBLFCPiO7mxTQe9qJMDiuKUgATgdpXuVRMl-carcEhqWrN/exec"
 
 rm "$tmpfile"

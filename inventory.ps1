@@ -162,7 +162,7 @@ while ($true) {
 }
 
 # Send to Google Sheets Webhook
-$webhookUrl = "https://script.google.com/macros/s/AKfycbyCJjgFceSqKS283KUtXYrL4X_g3woAlpya53sZPTFe9IQ8suZ9ZPVerBV-K25b698w/exec"
+$webhookUrl = "https://script.google.com/macros/s/AKfycbxgskn1sJA0H8fCw0YrroLBLFCPiO7mxTQe9qJMDiuKUgATgdpXuVRMl-carcEhqWrN/exec"
 $jsonPayload = $csvData | ConvertTo-Json -Depth 5 -Compress
 
 Write-Host "Sending data to Central Database..." -ForegroundColor Yellow
