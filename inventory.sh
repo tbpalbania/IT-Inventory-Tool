@@ -2,10 +2,12 @@
 
 echo -e "\033[0;36mTrusted Business Partners (Tax ID: M41304028K) - IT Inventory Tool\033[0m"
 
-read -p "Employee Name / Workstation ID: " employee
-read -p "Godina (Text/number Input): " godina
-read -p "Kati (Text/number Input): " kati
-read -p "Zyra (Text/number Input): " zyra
+# When a script is run via `curl | bash`, standard input is taken by the pipe.
+# We must explicitly read from /dev/tty to capture keyboard input from the user.
+read -p "Employee Name / Workstation ID: " employee < /dev/tty
+read -p "Godina (Text/number Input): " godina < /dev/tty
+read -p "Kati (Text/number Input): " kati < /dev/tty
+read -p "Zyra (Text/number Input): " zyra < /dev/tty
 
 tmpfile=$(mktemp)
 echo '"Make","Model","SerialNumber","Category","DeviceType","ParentPC_Serial","EmployeeName","Godina","Kati","Zyra","OSVersion"' > "$tmpfile"
@@ -36,7 +38,7 @@ done
 
 # Additional items
 while true; do
-    read -p "Add another item (Monitor, Printer, Accessories)? (y/n) " add
+    read -p "Add another item (Monitor, Printer, Accessories)? (y/n) " add < /dev/tty
     case $add in
         [Yy]* ) 
             echo "Select Category:"
@@ -47,7 +49,7 @@ while true; do
             echo "5. Headphones/Headset"
             echo "6. Docking Station"
             echo "7. Other"
-            read -p "Enter number (1-7): " catSelection
+            read -p "Enter number (1-7): " catSelection < /dev/tty
             
             cat="Other"
             case $catSelection in
@@ -60,9 +62,9 @@ while true; do
                 7) cat="Other";;
             esac
             
-            read -p "Make: " dmake
-            read -p "Model: " dmodel
-            read -p "Serial Number: " dserial
+            read -p "Make: " dmake < /dev/tty
+            read -p "Model: " dmodel < /dev/tty
+            read -p "Serial Number: " dserial < /dev/tty
             echo "\"$dmake\",\"$dmodel\",\"$dserial\",\"$cat\",\"Accessory\",\"$serial\",\"$employee\",\"$godina\",\"$kati\",\"$zyra\",\"\"" >> "$tmpfile"
             ;;
         * ) break;;
